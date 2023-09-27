@@ -1,26 +1,33 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import NewRoom from "./pages/Room/NewRoom";
+import AppLayout from "./pages/AppLayout";
+import Dashboard from "./pages/Dashboard";
+import ListRoom from "./pages/Room/ListRoom";
+import EditRoom from "./pages/Room/EditRoom";
+import ListRoomType from "./pages/RoomType/ListRoomType";
+import EditRoomType from "./pages/RoomType/EditRoomType";
+import NewRoomType from "./pages/RoomType/NewRoomType";
 
-function App() {
+
+
+const App: React.FC = () => {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/newroom" element={<NewRoom />} />
+          <Route path="/listroom" element={<ListRoom />} />
+          <Route path="/editroom/:id" element={<EditRoom />} />
+          <Route path="/newroomtype" element={<NewRoomType />} />
+          <Route path="/listroomtype" element={<ListRoomType />} />
+          <Route path="/editroomtype/:id" element={<EditRoomType />} />
+        </Route>
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
