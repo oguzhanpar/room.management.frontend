@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import {
     HomeOutlined,
@@ -14,6 +15,11 @@ import { Layout, Menu, theme } from 'antd';
 import { Typography } from 'antd';
 import '../index.css';
 
+const usePathname = () => {
+    const location = useLocation();
+    return location.pathname;
+    
+  }
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -53,6 +59,7 @@ const { Title } = Typography;
 
 
 const AppLayout: React.FC = () => {
+    
     const [collapsed, setCollapsed] = useState(false);
     const {
         token: { colorBgContainer },
@@ -63,7 +70,7 @@ const AppLayout: React.FC = () => {
         <Layout style={{ minHeight: '100vh' }}>
             <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
                 <div className="demo-logo-vertical" />
-                <Menu theme="dark" mode="inline" items={items} style={{ fontWeight: '500' }} />
+                <Menu selectedKeys={[usePathname()]} theme="dark" mode="inline" items={items} style={{ fontWeight: '500' }} />
             </Sider>
             <Layout>
                 <Header style={{ padding: 0, background: colorBgContainer }} />

@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Button, Select, Col, Card, Row, Form } from 'antd';
+import { Input, Button, Col, Card, Row, Form } from 'antd';
 import axios from 'axios';
 import { useParams } from 'react-router-dom'; // React Router'dan useParams'i içe aktarın
 
-interface RoomFormData {
-    roomNumber: string;
-    roomTypeId: string;
-    singleBedCount: string;
-    doubleBedCount: string;
-    smoking: string;
-    available: string;
+interface RoomTypeFormData {
+    name: string;
 }
 
 const EditRoomType: React.FC = () => {
@@ -19,39 +14,24 @@ const EditRoomType: React.FC = () => {
 
     const { id }: { id?: string } = useParams(); // URL'den id'yi alın
     
-    const [formData, setFormData] = useState<RoomFormData>({
-            roomNumber: '',
-            available: '',
-            singleBedCount: '',
-            doubleBedCount: '',
-            smoking: '',
-            roomTypeId: ''
+    const [formData, setFormData] = useState<RoomTypeFormData>({
+            name: '',
         });
 
     useEffect(() => {
         // Burada id'yi kullanarak verileri çekebilirsiniz
-        axios.get(`http://localhost:8080/api/v1/rooms/${id}`)
+        axios.get(`http://localhost:8080/api/v1/roomtypes/${id}`)
             .then((response) => {
-                const roomData = response.data;
-                console.log(roomData);
+                const roomTypeData = response.data;
+                console.log(roomTypeData);
 
                 // Verileri formData içine yerleştirin
                 setFormData({
-                    roomNumber: roomData.roomNumber,
-                    available: roomData.available.toString(),
-                    singleBedCount: roomData.singleBedCount.toString(),
-                    doubleBedCount: roomData.doubleBedCount.toString(),
-                    smoking: roomData.smoking.toString(),
-                    roomTypeId: roomData.roomType.id.toString()
+                    name: roomTypeData.name,
                 });
 
                 updateForm.setFieldsValue({
-                    roomNumber: roomData.roomNumber, // Form alanlarını güncel verilerle doldurun
-                    roomTypeId: roomData.roomType.id.toString(),
-                    singleBedCount: roomData.singleBedCount.toString(),
-                    doubleBedCount: roomData.doubleBedCount.toString(),
-                    smoking: roomData.smoking.toString(),
-                    available: roomData.available.toString(),
+                    name: roomTypeData.name, // Form alanlarını güncel verilerle doldurun
                 });
 
                
@@ -76,53 +56,28 @@ const EditRoomType: React.FC = () => {
         }
     };
 
-    const handleSelectChange = (value: string) => {
-        setFormData({
-            ...formData,
-            roomTypeId: value,
-        });
-    };
 
-    const handleSmokingChange = (value: string) => {
-        setFormData({
-            ...formData,
-            smoking: value,
-        });
-    };
 
-    const handleAvailableChange = (value: string) => {
-        setFormData({
-            ...formData,
-            available: value,
-        });
-    };
 
     const handleSubmit = async () => {
         try {
             // Axios ile PUT isteği gönderin ve sunucudan dönen response'yi alın
-            const response = await axios.put(`http://localhost:8080/api/v1/rooms/${id}`, {
-                roomNumber: formData.roomNumber,
-                available: formData.available === 'true',
-                singleBedCount: Number(formData.singleBedCount),
-                doubleBedCount: Number(formData.doubleBedCount),
-                smoking: formData.smoking === 'true',
-                roomType: {
-                    id: Number(formData.roomTypeId)
-                },
+            const response = await axios.put(`http://localhost:8080/api/v1/roomtypes/${id}`, {
+                name: formData.name,
             });
 
             // İşlem başarılıysa cevabı kontrol edin ve gerekli işlemleri yapın
             if (response.status === 200) {
-                alert('Oda başarıyla güncellendi');
+                alert('Oda tipi başarıyla güncellendi');
             }
         } catch (error) {
-            console.error('Oda güncellenirken bir hata oluştu:', error);
+            console.error('Oda tipi güncellenirken bir hata oluştu:', error);
         }
     };
 
     return (
         <div>
-            <h2>{formData.roomNumber} - Oda Tipi Düzenle</h2>
+            <h2>{formData.name} - Oda Tipi Düzenle</h2>
             <Col className="gutter-row" span={24}>
                 <Card>
                     <Form form={updateForm} layout="vertical" id="updateForm" onFinish={handleSubmit}>
@@ -131,8 +86,8 @@ const EditRoomType: React.FC = () => {
                                 <Col span={12} >
                                     <Form.Item
                                     
-                                        name="roomNumber"
-                                        label="Oda Numarası"
+                                        name="name"
+                                        label="Oda Tipi Adı"
                                         rules={[
                                             {
                                                 required: true,
@@ -140,107 +95,12 @@ const EditRoomType: React.FC = () => {
                                             }
                                         ]}
                                     >
-                                        <Input name="roomNumber"
-                                            value={formData.roomNumber}
+                                        <Input name="name"
+                                            value={formData.name}
                                             onChange={handleInputChange} />
                                     </Form.Item>
                                 </Col>
-                                <Col span={12}>
-                                    <Form.Item
-                                        name="roomTypeId"
-                                        label="Oda Tipi"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Bu alan zorunludur',
-                                            },
-                                        ]}
-                                    >
-                                        <Select
-                                            onChange={handleSelectChange}
-                                            placeholder='Seçiniz'
-                                            options={[
-                                                { value: '1', label: 'Deluxe' },
-                                                { value: '2', label: 'Standart' }
-                                            ]
-                                            }
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={12} >
-                                    <Form.Item
-                                        name="singleBedCount"
-                                        label="Tek Kişi Yatak Sayısı"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Bu alan zorunludur',
-                                            },
-                                        ]}
-                                    >
-                                        <Input
-                                            type="number"
-                                            name="singleBedCount"
-                                            value={formData.singleBedCount}
-                                            onChange={handleInputChange} />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={12} >
-                                    <Form.Item
-                                        name="doubleBedCount"
-                                        label="Çift Kişi Yatak Sayısı"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Bu alan zorunludur',
-                                            },
-                                        ]}
-                                    >
-                                        <Input
-                                            type="number"
-                                            name="doubleBedCount"
-                                            value={formData.doubleBedCount}
-                                            onChange={handleInputChange} />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={12}>
-                                    <Form.Item
-                                        name="smoking"
-                                        label="Sigara İçilebilir?"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Bu alan zorunludur',
-                                            },
-                                        ]}
-                                    >
-                                        <Select
-                                            onChange={handleSmokingChange}
-                                        >
-                                            <Select.Option value="false">Hayır</Select.Option>
-                                            <Select.Option value="true">Evet</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
-                                <Col span={12}>
-                                    <Form.Item
-                                        name="available"
-                                        label="Müsait?"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Bu alan zorunludur',
-                                            },
-                                        ]}
-                                    >
-                                        <Select
-                                            onChange={handleAvailableChange}
-                                        >
-                                            <Select.Option value="true">Evet</Select.Option>
-                                            <Select.Option value="false">Hayır</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
+                       
                                 <Col span={24}>
                                     <Form.Item>
                                         <Button type="primary" htmlType="submit">Güncelle</Button>

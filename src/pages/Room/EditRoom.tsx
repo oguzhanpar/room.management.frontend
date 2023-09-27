@@ -3,6 +3,11 @@ import { Input, Button, Select, Col, Card, Row, Form } from 'antd';
 import axios from 'axios';
 import { useParams } from 'react-router-dom'; // React Router'dan useParams'i içe aktarın
 
+type RoomType = {
+    id: number;
+    name: string;
+  };
+
 interface RoomFormData {
     roomNumber: string;
     roomTypeId: string;
@@ -15,6 +20,7 @@ interface RoomFormData {
 const EditRoom: React.FC = () => {
 
     const [updateForm] = Form.useForm();
+    const [roomTypes, setRoomTypes] = useState<RoomType[]>([]); // RoomType[] olarak tanımlanmıştır.
 
 
     const { id }: { id?: string } = useParams(); // URL'den id'yi alın
@@ -28,7 +34,29 @@ const EditRoom: React.FC = () => {
             roomTypeId: ''
         });
 
+        const fetchRoomTypes = async () => {
+
+            try {
+        
+              axios.get('http://localhost:8080/api/v1/roomtypes/') // API endpointini uygun şekilde değiştirin
+                .then((response) => {        
+                  setRoomTypes(response.data);
+                })
+                .catch((error) => {
+                  console.error('Veri çekme hatası:', error);
+                });
+        
+            } catch (error) {
+        
+              console.error('TRY çekme hatası:', error);
+        
+            }}
+
     useEffect(() => {
+
+
+        fetchRoomTypes();
+
         // Burada id'yi kullanarak verileri çekebilirsiniz
         axios.get(`http://localhost:8080/api/v1/rooms/${id}`)
             .then((response) => {
@@ -159,10 +187,10 @@ const EditRoom: React.FC = () => {
                                         <Select
                                             onChange={handleSelectChange}
                                             placeholder='Seçiniz'
-                                            options={[
-                                                { value: '1', label: 'Deluxe' },
-                                                { value: '2', label: 'Standart' }
-                                            ]
+                                            options={roomTypes.map((roomType) => ({
+                                                value: roomType.id.toString(),
+                                                label: roomType.name,
+                                              }))
                                             }
                                         />
                                     </Form.Item>

@@ -57,6 +57,8 @@ const ListRoom: React.FC = () => {
       render: (available) => (available ? 'Evet' : 'Hayır'),
     },
     {
+      align: 'center' as const,
+      width: '5%',
       render: (record) => (
         <Link to={`/editroom/${record.id}`}>
             <Button key={`show-${record.id}`} type="default" icon={<EditOutlined />} ></Button>
@@ -65,6 +67,8 @@ const ListRoom: React.FC = () => {
       ),
     },
     {
+      align: 'center' as const,
+      width: '5%',
       render: (text, record) => (
         <Popconfirm
           title="Bu kaydı, silmek istediğinizden emin misiniz?"

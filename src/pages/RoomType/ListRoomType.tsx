@@ -5,71 +5,38 @@ import axios from 'axios';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
-interface RoomData {
+interface RoomTypeData {
   id: number;
-  roomNumber: string;
-  singleBedCount: number;
-  doubleBedCount: number;
-  roomType: {
-    id: number;
-    name: string;
-  };
-  smoking: boolean;
-  available: boolean;
+  name: string;
 }
-
-
 
 const ListRoom: React.FC = () => {
 
-  const [listFilter, setListFilter] = useState({});
+  const [data, setData] = useState<RoomTypeData[]>([]);
 
-  const [data, setData] = useState<RoomData[]>([]);
-  const [changed, setChanged] = useState(false);
-
-
-  const columns: ColumnsType<RoomData> = [
-    {
-      title: 'Oda Numarası',
-      dataIndex: 'roomNumber',
-    },
-    {
-      title: 'Single Yatak Sayısı',
-      dataIndex: 'singleBedCount',
-    },
-    {
-      title: 'Double Yatak Sayısı',
-      dataIndex: 'doubleBedCount',
-    },
+  const columns: ColumnsType<RoomTypeData> = [
     {
       title: 'Oda Tipi',
-      dataIndex: 'roomType',
-      render: (roomType) => roomType.name,
+      dataIndex: 'name',
     },
     {
-      title: 'Sigara İçilebilir?',
-      dataIndex: 'smoking',
-      render: (smoking) => (smoking ? 'Evet' : 'Hayır'),
-    },
-    {
-      title: 'Müsait?',
-      dataIndex: 'available',
-      render: (available) => (available ? 'Evet' : 'Hayır'),
-    },
-    {
+      align: 'center' as const,
+      width: '5%',
       render: (record) => (
-        <Link to={`/editroom/${record.id}`}>
+        <Link to={`/editroomtype/${record.id}`}>
             <Button key={`show-${record.id}`} type="default" icon={<EditOutlined />} ></Button>
         </Link>
 
       ),
     },
     {
+      align: 'center' as const,
+      width: '5%',
       render: (text, record) => (
         <Popconfirm
           title="Bu kaydı, silmek istediğinizden emin misiniz?"
           description="Dikkat, bu işlem oda bilgilerinizi ve ilişkili tüm hareketleri de silecektir!"
-          onConfirm={() => { handleDeleteRoom(record.id) }}
+          onConfirm={() => { handleDeleteRoomType(record.id) }}
           okText="Sil"
           cancelText="Kapat"
         >
@@ -80,9 +47,9 @@ const ListRoom: React.FC = () => {
   ];
 
 
-  const handleDeleteRoom = (_id: number) => {
+  const handleDeleteRoomType = (_id: number) => {
     // Silme işlemi için Axios DELETE isteği gönderin
-    axios.delete(`http://localhost:8080/api/v1/rooms/${_id}`)
+    axios.delete(`http://localhost:8080/api/v1/roomtypes/${_id}`)
       .then((response) => {
         if (response.status === 204) {
           handleFetchTableData()
@@ -92,12 +59,12 @@ const ListRoom: React.FC = () => {
       .catch((error) => {
         console.error('Oda silinirken bir hata oluştu:', error);
       });
-  }
+    }
 
   const handleFetchTableData = async () => {
 
     try {
-      axios.get('http://localhost:8080/api/v1/rooms/') // API endpointini uygun şekilde değiştirin
+      axios.get('http://localhost:8080/api/v1/roomtypes/') // API endpointini uygun şekilde değiştirin
       .then((response) => {
         setData(response.data); // Veriyi state'e ekleyin
         console.log(response)
@@ -120,7 +87,7 @@ const ListRoom: React.FC = () => {
     handleFetchTableData()
   }, []);
 
-  const onChange: TableProps<RoomData>['onChange'] = (pagination, filters, sorter, extra) => {
+  const onChange: TableProps<RoomTypeData>['onChange'] = (pagination, filters, sorter, extra) => {
     console.log('params', pagination, filters, sorter, extra);
   };
 

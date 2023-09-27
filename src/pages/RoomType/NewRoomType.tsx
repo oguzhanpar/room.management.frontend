@@ -2,34 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Input, Button, Select, Col, Card, Row, Form } from 'antd';
 import axios from 'axios'; // Axios'ı projenize ekleyin
 
-type RoomType = {
-  id: number;
-  name: string;
-};
 
-interface RoomFormData {
-  roomNumber: string;
-  roomTypeId: string;
-  singleBedCount: string;
-  doubleBedCount: string;
-  smoking: string;
-  available: string;
+
+interface RoomTypeFormData {
+  name: string;
 }
 
 const NewRoom: React.FC = () => {
 
   const [newForm] = Form.useForm();
-  const [roomTypes, setRoomTypes] = useState<RoomType[]>([]); // RoomType[] olarak tanımlanmıştır.
 
 
-  const [formData, setFormData] = useState<RoomFormData>(
+  const [formData, setFormData] = useState<RoomTypeFormData>(
     {
-      roomNumber: '',
-      available: '',
-      singleBedCount: '',
-      doubleBedCount: '',
-      smoking: '',
-      roomTypeId: ''
+      name: ''
     });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,106 +29,33 @@ const NewRoom: React.FC = () => {
   };
 
 
-  const fetchRoomTypes = async () => {
-
-    try {
-
-      axios.get('http://localhost:8080/api/v1/roomtypes/') // API endpointini uygun şekilde değiştirin
-        .then((response) => {
-          console.log(response);
-
-
-          setRoomTypes(response.data);
-
-   
-
-
-
-
-        })
-        .catch((error) => {
-          console.error('Veri çekme hatası:', error);
-        });
-
-    } catch (error) {
-
-      console.error('TRY çekme hatası:', error);
-
-    }
-
-    console.log('glide');
-
-  }
-
-  const handleSelectChange = (value: string) => {
-    setFormData({
-      ...formData,
-      roomTypeId: value, // Seçilen değeri roomTypeId'ye atayın
-    });
-
-    console.log(formData);
-  };
-
-  const handleSmokingChange = (value: string) => {
-    setFormData({
-      ...formData,
-      smoking: value, // Seçilen değeri roomTypeId'ye atayın
-    });
-
-    console.log(formData);
-  };
-
-  const handleAvailableChange = (value: string) => {
-    setFormData({
-      ...formData,
-      available: value, // Seçilen değeri roomTypeId'ye atayın
-    });
-
-    console.log(formData);
-  };
 
   const handleSubmit = async () => {
     try {
       // Axios ile POST isteği gönderin ve sunucudan dönen response'yi alın
-      const response = await axios.post('http://localhost:8080/api/v1/rooms/', {
-        roomNumber: formData.roomNumber,
-        available: formData.available,
-        singleBedCount: formData.singleBedCount,
-        doubleBedCount: formData.doubleBedCount,
-        smoking: formData.smoking,
-        roomType: {
-          id: formData.roomTypeId
-        },
+      const response = await axios.post('http://localhost:8080/api/v1/roomtypes/', {
+        name: formData.name,
       });
 
       // İşlem başarılıysa cevabı kontrol edin ve gerekli işlemleri yapın
       if (response.status === 200) {
 
-        alert('Oda başarıyla oluşturuldu');
+        alert('Oda tipi başarıyla oluşturuldu');
         // Formu sıfırlayabilirsiniz
         setFormData({
-          roomNumber: '',
-          available: '',
-          singleBedCount: '',
-          doubleBedCount: '',
-          smoking: '',
-          roomTypeId: '',
+          name: ''
         });
 
         newForm.resetFields();
 
       }
     } catch (error) {
-      console.error('Oda oluşturulurken bir hata oluştu:', error);
+      console.error('Oda tipi oluşturulurken bir hata oluştu:', error);
       console.log('Bir hata oluştu')
     }
   };
 
-  useEffect(() => {
 
-    fetchRoomTypes()
-
-  }, []);
 
 
   return (
@@ -156,8 +69,8 @@ const NewRoom: React.FC = () => {
               <Row gutter={10} >
                 <Col span={12} >
                   <Form.Item
-                    name="room"
-                    label="Oda Numarası"
+                    name="name"
+                    label="Oda Tipi Adı"
                     rules={[
                       {
                         required: true,
@@ -165,112 +78,12 @@ const NewRoom: React.FC = () => {
                       }
                     ]}
                   >
-                    <Input name="roomNumber"
-                      value={formData.roomNumber}
+                    <Input name="name"
+                      value={formData.name}
                       onChange={handleInputChange} />
                   </Form.Item>
                 </Col>
-                <Col span={12}>
-                  <Form.Item
-                    name="roomTypeId"
-                    label="Oda Tipi"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Bu alan zorunludur',
-                      },
-                    ]}
-                  >
-                    <Select
-                      onChange={handleSelectChange}
-                      placeholder='Seçiniz'
-                      options={roomTypes.map((roomType) => ({
-                        value: roomType.id.toString(),
-                        label: roomType.name,
-                      }))}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12} >
-                  <Form.Item
-                    initialValue="0"
-                    name="singleBedCount"
-                    label="Tek Kişi Yatak Sayısı"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Bu alan zorunludur',
-                      },
-                    ]}
-                  >
-                    <Input
-                      type="number"
-                      name="singleBedCount"
-                      value={formData.singleBedCount}
-                      onChange={handleInputChange} />
-                  </Form.Item>
-                </Col>
-                <Col span={12} >
-                  <Form.Item
-                    initialValue="0"
-                    name="doubleBedCount"
-                    label="Çift Kişi Yatak Sayısı"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Bu alan zorunludur',
-                      },
-                    ]}
-                  >
-                    <Input
-                      type="number"
-                      name="doubleBedCount"
-                      value={formData.doubleBedCount}
-                      onChange={handleInputChange} />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    initialValue="false"
-                    name="smoking"
-                    label="Sigara İçilebilir?"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Bu alan zorunludur',
-                      },
-                    ]}
-                  >
-                    <Select
-                      placeholder='Seçiniz'
-                      onChange={handleSmokingChange}
-                    >
-                      <Select.Option value="true">Evet</Select.Option>
-                      <Select.Option value="false">Hayır</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    initialValue="true"
-                    name="available"
-                    label="Müsait?"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Bu alan zorunludur',
-                      },
-                    ]}
-                  >
-                    <Select
-                      placeholder='Seçiniz'
-                      onChange={handleAvailableChange}
-                    >
-                      <Select.Option value="true">Evet</Select.Option>
-                      <Select.Option value="false">Hayır</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
+            
                 <Col span={24}>
                   <Form.Item>
                     <Button type="primary" htmlType="submit">Kaydet</Button>
