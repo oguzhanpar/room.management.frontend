@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-
+import './App.css'
 import {
     HomeOutlined,
     UnorderedListOutlined,

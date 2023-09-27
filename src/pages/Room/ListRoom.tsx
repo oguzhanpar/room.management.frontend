@@ -128,11 +128,14 @@ const ListRoom: React.FC = () => {
     console.log('params', pagination, filters, sorter, extra);
   };
 
-  return <Table columns={columns}
+  return  <div>
+          <h2>Oda Listele</h2>
+  <Table columns={columns}
     dataSource={data.map(item => ({ ...item, key: item.id.toString() }))}
     onChange={onChange}
     pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '25', '50', '100'] }}
-    />;
+    />
+    </div>
 };
 
 export default ListRoom;
